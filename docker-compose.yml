@@ -22,7 +22,7 @@ services:
       args:
         - WASABI_BASE_IMAGE=wasabi-base-${WASABI_PROFILE}:${WASABI_VERSION}
         - WASABI_JAVA_OPTIONS
-        - WASABI_PORT
+        - WASABI_PORT_API
         - WASABI_PORT_JMX
         - WASABI_PORT_DEBUG
         - MYSQL_DATABASE=wasabi
@@ -35,7 +35,7 @@ services:
         - CASSANDRA_HOST=cassandra
     command: ["/app/api-entrypoint.sh"]
     ports:
-      - "${WASABI_PORT}:${WASABI_PORT}"
+      - "${WASABI_PORT_API}:${WASABI_PORT_API}"
       - "${WASABI_PORT_JMX}:${WASABI_PORT_JMX}"
       - "${WASABI_PORT_DEBUG}:${WASABI_PORT_DEBUG}"
     depends_on:
@@ -51,12 +51,11 @@ services:
       dockerfile: wasabi-ui.Dockerfile
       args:
         - WASABI_BASE_IMAGE=wasabi-base-${WASABI_PROFILE}:${WASABI_VERSION}
-        - WASABI_API=http://localhost:${WASABI_PORT}/api/v1
+        - WASABI_API=http://localhost:${WASABI_PORT_API}/api/v1
         - WASABI_PORT_UI
     command: ["grunt", "serve:dist"]
     ports:
       - "9090:9090"
-      - "9000:9000"
     depends_on:
       - wasabi-base
       - wasabi-api
