@@ -37,7 +37,7 @@ EOF
 }
 
 fromPom() {
-  mvn ${WASABI_MAVEN} -f $1/pom.xml -P$2 help:evaluate -Dexpression=$3 -B \
+  mvn ${WASABI_MAVEN_SETTINGS} -f $1/pom.xml -P$2 help:evaluate -Dexpression=$3 -B \
     -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=error | \
     sed -n -e '/^\[.*\]/ !{ p; }'
 }
