@@ -100,8 +100,6 @@ services:
         - WASABI_VERSION
     container_name: wasabi_cassandra_setup
     command: ["/wasabi/cassandra-setup.sh"]
-    # ports:
-      # - "${CASSANDRA_PORT}:${CASSANDRA_PORT}"
     depends_on:
       - cassandra
 
