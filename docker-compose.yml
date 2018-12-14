@@ -9,6 +9,7 @@ services:
       context: .
       dockerfile: wasabi-base.Dockerfile
       args:
+        - WASABI_MAVEN_SETTINGS
         - WASABI_VERSION=1.0.20181205072204
         - WASABI_PROFILE=development
 
@@ -19,7 +20,8 @@ services:
       context: .
       dockerfile: wasabi-api.Dockerfile
       args:
-        - JAVA_OPTIONS
+        - WASABI_BASE_IMAGE=wasabi-base-${WASABI_PROFILE}:${WASABI_VERSION}
+        - WASABI_JAVA_OPTIONS
         - WASABI_PORT
         - WASABI_PORT_JMX
         - WASABI_PORT_DEBUG
