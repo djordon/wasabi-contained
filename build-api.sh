@@ -80,7 +80,7 @@ version=$(fromPom . ${profile} project.version)
 home=./modules/${module}/target
 id=${artifact}-${version}-${profile}
 
-/bin/rm -rf ${home}/${id}
+rm -rf ${home}/${id}
 mkdir -p ${home}/${id}/bin ${home}/${id}/conf ${home}/${id}/lib ${home}/${id}/logs
 
 cp ${home}/extra-resources/service/run ${home}/${id}/bin
@@ -107,7 +107,4 @@ cp ./modules/repository-datastax/target/classes/repository.properties ${home}/${
 cp ./modules/user-directory/target/classes/userDirectory.properties ${home}/${id}/conf
 cp ${home}/${id}-all.jar ${home}/${id}/lib
 
-chmod 755 ${home}/${id}/bin/run
-chmod 755 ${home}/${id}/entrypoint.sh
-sed -i '' -e "s/chpst -u [^:]*:[^ ]* //" ${home}/${id}/bin/run 2>/dev/null
 exit 0
