@@ -37,7 +37,7 @@ EOF
 }
 
 fromPom() {
-  mvn ${WASABI_MAVEN} -f $1/pom.xml -P$2 help:evaluate -Dexpression=$3 -B \
+  mvn ${WASABI_MAVEN_SETTINGS} -f $1/pom.xml -P$2 help:evaluate -Dexpression=$3 -B \
     -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=error | \
     sed -n -e '/^\[.*\]/ !{ p; }'
 }
@@ -67,21 +67,12 @@ while getopts "${optspec}" opt; do
 done
 
 profile=${profile:=${profile_default}}
-build=${build:=${build_default}}
 test=${test:=${test_default}}
 module=main
 
-[[ "${build}" != "true" && "${build}" != "false" ]] && usage "invalid build parameter" 1
-[[ "${test}" != "true" && "${test}" != "false" ]] && usage "invalid test parameter" 1
-[ ! -e ./modules/main/target/wasabi-main-*-SNAPSHOT-${profile}-all.jar ] && build_jar=true
-
-if [[ "${build}" = true || "${test}" = true || "${build_jar}" = true ]]; then
-  [ "${build}" = true ] && package=package
-  [ ! -e ./modules/main/target/wasabi-main-*-SNAPSHOT-${profile}-all.jar ] && package=package
-  [ "${test}" = true ] && tests="org.jacoco:jacoco-maven-plugin:prepare-agent findbugs:check test"
-
-  mvn ${WASABI_MAVEN} -P${profile} clean ${tests:--Dmaven.test.skip=true} ${package} javadoc:aggregate || \
-    usage "invalid: mvn ${WASABI_MAVEN} -P${profile} clean ${tests:--Dmaven.test.skip=true} ${package} javadoc:aggregate" 1
+if [[ "${test}" = true ]]; then
+  mvn ${WASABI_MAVEN} -P${profile} clean org.jacoco:jacoco-maven-plugin:prepare-agent findbugs:check test javadoc:aggregate || \
+    usage "invalid: mvn ${WASABI_MAVEN} -P${profile} clean org.jacoco:jacoco-maven-plugin:prepare-agent findbugs:check test ${package} javadoc:aggregate" 1
 fi
 
 artifact=$(fromPom ./modules/${module} ${profile} project.artifactId)
