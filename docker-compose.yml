@@ -50,8 +50,9 @@ services:
       context: .
       dockerfile: wasabi-ui.Dockerfile
       args:
+        - WASABI_BASE_IMAGE=wasabi-base-${WASABI_PROFILE}:${WASABI_VERSION}
         - WASABI_API=http://localhost:${WASABI_PORT}/api/v1
-        - WASABI_UI_PORT=9090
+        - WASABI_PORT_UI
     command: ["grunt", "serve:dist"]
     ports:
       - "9090:9090"
