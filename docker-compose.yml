@@ -25,14 +25,14 @@ services:
         - WASABI_PORT_API
         - WASABI_PORT_JMX
         - WASABI_PORT_DEBUG
-        - MYSQL_DATABASE=wasabi
-        - MYSQL_HOSTNAME=mysql
-        - MYSQL_USER=readwrite
-        - MYSQL_PASSWORD=readwrite
-        - MYSQL_PORT=3306
-        - CASSANDRA_USER=cassandra
-        - CASSANDRA_PASSWORD=cassandra
-        - CASSANDRA_HOST=cassandra
+        - MYSQL_DATABASE
+        - MYSQL_HOSTNAME
+        - MYSQL_USER
+        - MYSQL_PASSWORD
+        - MYSQL_PORT
+        - CASSANDRA_USER
+        - CASSANDRA_PASSWORD
+        - CASSANDRA_HOST
     command: ["/app/api-entrypoint.sh"]
     ports:
       - "${WASABI_PORT_API}:${WASABI_PORT_API}"
@@ -55,7 +55,7 @@ services:
         - WASABI_PORT_UI
     command: ["grunt", "serve:dist"]
     ports:
-      - "9090:9090"
+      - "${WASABI_PORT_UI}:${WASABI_PORT_UI}"
     depends_on:
       - wasabi-base
       - wasabi-api
@@ -66,12 +66,12 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - "${MYSQL_PORT}:${MYSQL_PORT}"
     environment:
-      MYSQL_DATABASE: wasabi
-      MYSQL_PASSWORD: readwrite
-      MYSQL_ROOT_PASSWORD: root_test
-      MYSQL_USER: readwrite
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
     restart: always
 
   cassandra:
@@ -80,7 +80,7 @@ services:
     volumes:
       - cassandra-data:/var/lib/cassandra
     ports:
-      - "9042:9042"
+      - "${CASSANDRA_PORT}:${CASSANDRA_PORT}"
     healthcheck:
       test: ["CMD-SHELL", "[ $$(nodetool statusgossip) = running ]"]
       interval: 30s
@@ -93,13 +93,14 @@ services:
       context: .
       dockerfile: cassandra-setup.Dockerfile
       args:
-        - CASSANDRA_USER=cassandra
-        - CASSANDRA_PASSWORD=cassandra
-        - CASSANDRA_HOST=cassandra
+        - CASSANDRA_HOST
+        - CASSANDRA_PASSWORD
+        - CASSANDRA_PORT
+        - CASSANDRA_USER
     container_name: wasabi_cassandra_setup
     command: ["/wasabi/cassandra-setup.sh"]
-    ports:
-      - "9042:9042"
+    # ports:
+      # - "${CASSANDRA_PORT}:${CASSANDRA_PORT}"
     depends_on:
       - cassandra
 

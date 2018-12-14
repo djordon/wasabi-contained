@@ -8,7 +8,7 @@ cqlsh -e "\
     ${CASSANDRA_HOST:-localhost} \
     ${CASSANDRA_PORT:-9042}
 
-java -jar -Dcassandra.migration.keyspace.name=${CASSANDRA_KEYSPACE:-wasabi_experiments} \
+java -jar -Dcassandra.migration.keyspace.name=${CASSANDRA_KEYSPACE_PREFIX:-wasabi}_experiments \
     -Dcassandra.migration.cluster.port=${CASSANDRA_PORT:-9042} \
     -Dcassandra.migration.cluster.username=${CASSANDRA_USER} \
     -Dcassandra.migration.cluster.password=${CASSANDRA_PASSWORD} \
