@@ -2,21 +2,32 @@ FROM cassandra:3.11.3
 
 WORKDIR /wasabi
 
-RUN git clone --depth 1 https://github.com/intuit/wasabi.git /wasabi --branch ${WASABI_VERSION}
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
+
+ARG WASABI_VERSION
+RUN git clone --depth 1 https://github.com/intuit/wasabi.git . --branch ${WASABI_VERSION}
+RUN mkdir -p /wasabi/migrations \
+    && cp -R /wasabi/modules/repository-datastax/src/main/resources/com/intuit/wasabi/repository/impl/cassandra/migration /wasabi/migrations
 
 ADD https://github.com/hhandoko/cassandra-migration/releases/download/cassandra-migration-0.15/cassandra-migration-0.15-jar-with-dependencies.jar .
-RUN mkdir -p /wasabi/migrations && cp modules/repository-datastax/src/main/resources/com/intuit/wasabi/repository/impl/cassandra/migration /wasabi/migrations
 ADD cassandra-setup.sh .
 
-ENV CASSANDRA_MIGRATION_DIR=/wasabi/migrations
-ENV CASSANDRA_MIGRATION_JAR=/wasabi/cassandra-migration-0.15-jar-with-dependencies.jar
-
-ARG CASSANDRA_USER
-ARG CASSANDRA_PASSWORD
 ARG CASSANDRA_HOST
+ARG CASSANDRA_KEYSPACE_PREFIX
+ARG CASSANDRA_PASSWORD
+ARG CASSANDRA_PORT
+ARG CASSANDRA_REPLICATION
+ARG CASSANDRA_USER
 
-ENV CASSANDRA_USER=${CASSANDRA_USER}
-ENV CASSANDRA_PASSWORD=${CASSANDRA_PASSWORD}
-ENV CASSANDRA_HOST=${CASSANDRA_HOST}
+ENV CASSANDRA_MIGRATION_DIR=/wasabi/migrations \
+    CASSANDRA_MIGRATION_JAR=/wasabi/cassandra-migration-0.15-jar-with-dependencies.jar \
+    CASSANDRA_USER=${CASSANDRA_USER} \
+    CASSANDRA_HOST=${CASSANDRA_HOST} \
+    CASSANDRA_KEYSPACE_PREFIX=${CASSANDRA_KEYSPACE_PREFIX} \
+    CASSANDRA_PASSWORD=${CASSANDRA_PASSWORD} \
+    CASSANDRA_PORT=${CASSANDRA_PORT} \
+    CASSANDRA_REPLICATION=${CASSANDRA_REPLICATION}
 
 CMD ["sh", "/wasabi/cassandra-setup.sh"]

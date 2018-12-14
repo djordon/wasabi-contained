@@ -91,12 +91,13 @@ services:
     image: cassandra-setup-${WASABI_VERSION}:3.11.3
     build: 
       context: .
-      dockerfile: cassandra-setup.Dockerfile
+      dockerfile: wasabi-cassandra.Dockerfile
       args:
         - CASSANDRA_HOST
         - CASSANDRA_PASSWORD
         - CASSANDRA_PORT
         - CASSANDRA_USER
+        - WASABI_VERSION
     container_name: wasabi_cassandra_setup
     command: ["/wasabi/cassandra-setup.sh"]
     # ports:
