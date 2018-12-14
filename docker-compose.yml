@@ -1,0 +1,106 @@
+version: "3"
+
+services:
+
+  wasabi-base:
+    container_name: wasabi_base
+    image: wasabi-base-${WASABI_PROFILE}:${WASABI_VERSION}
+    build: 
+      context: .
+      dockerfile: wasabi-base.Dockerfile
+      args:
+        - WASABI_VERSION=1.0.20181205072204
+        - WASABI_PROFILE=development
+
+  wasabi-api:
+    container_name: wasabi_api
+    image: wasabi-api-${WASABI_PROFILE}:${WASABI_VERSION}
+    build: 
+      context: .
+      dockerfile: wasabi-api.Dockerfile
+      args:
+        - JAVA_OPTIONS
+        - WASABI_PORT
+        - WASABI_PORT_JMX
+        - WASABI_PORT_DEBUG
+        - MYSQL_DATABASE=wasabi
+        - MYSQL_HOSTNAME=mysql
+        - MYSQL_USER=readwrite
+        - MYSQL_PASSWORD=readwrite
+        - MYSQL_PORT=3306
+        - CASSANDRA_USER=cassandra
+        - CASSANDRA_PASSWORD=cassandra
+        - CASSANDRA_HOST=cassandra
+    command: ["/app/api-entrypoint.sh"]
+    ports:
+      - "${WASABI_PORT}:${WASABI_PORT}"
+      - "${WASABI_PORT_JMX}:${WASABI_PORT_JMX}"
+      - "${WASABI_PORT_DEBUG}:${WASABI_PORT_DEBUG}"
+    depends_on:
+      - wasabi-base
+      - mysql
+      - cassandra
+
+  wasabi-ui:
+    container_name: wasabi_ui
+    image: wasabi-ui-${WASABI_PROFILE}:${WASABI_VERSION}
+    build: 
+      context: .
+      dockerfile: wasabi-ui.Dockerfile
+      args:
+        - WASABI_API=http://localhost:${WASABI_PORT}/api/v1
+        - WASABI_UI_PORT=9090
+    command: ["grunt", "serve:dist"]
+    ports:
+      - "9090:9090"
+      - "9000:9000"
+    depends_on:
+      - wasabi-base
+      - wasabi-api
+
+  mysql:
+    image: mysql:5.6.42
+    container_name: wasabi_mysql
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: wasabi
+      MYSQL_PASSWORD: readwrite
+      MYSQL_ROOT_PASSWORD: root_test
+      MYSQL_USER: readwrite
+    restart: always
+
+  cassandra:
+    image: cassandra:3.11.3
+    container_name: wasabi_cassandra
+    volumes:
+      - cassandra-data:/var/lib/cassandra
+    ports:
+      - "9042:9042"
+    healthcheck:
+      test: ["CMD-SHELL", "[ $$(nodetool statusgossip) = running ]"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  cassandra-setup:
+    image: cassandra-setup-${WASABI_VERSION}:3.11.3
+    build: 
+      context: .
+      dockerfile: cassandra-setup.Dockerfile
+      args:
+        - CASSANDRA_USER=cassandra
+        - CASSANDRA_PASSWORD=cassandra
+        - CASSANDRA_HOST=cassandra
+    container_name: wasabi_cassandra_setup
+    command: ["/wasabi/cassandra-setup.sh"]
+    ports:
+      - "9042:9042"
+    depends_on:
+      - cassandra
+
+volumes:
+  mysql-data:
+  cassandra-data:
