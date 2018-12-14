@@ -17,7 +17,9 @@ RUN git clone --depth 1 https://github.com/intuit/wasabi.git . --branch ${WASABI
 ARG WASABI_PROFILE=development
 ENV WASABI_PROFILE=${WASABI_PROFILE}
 
-ARG WASABI_MAVEN=
-ENV WASABI_MAVEN=${WASABI_MAVEN}
+ARG WASABI_MAVEN_SETTINGS=
+ENV WASABI_MAVEN_SETTINGS=${WASABI_MAVEN_SETTINGS}
 
-RUN mvn ${WASABI_MAVEN} -P${WASABI_PROFILE} clean -Dmaven.test.skip=true package javadoc:aggregate
+RUN mvn ${WASABI_MAVEN_SETTINGS} \
+    -P${WASABI_PROFILE} clean \
+    -Dmaven.test.skip=true package javadoc:aggregate
