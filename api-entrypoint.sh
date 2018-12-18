@@ -2,9 +2,8 @@
 
 APP_NAME=wasabi-main-${WASABI_VERSION}-${WASABI_PROFILE}
 WASABI_HOME=${WASABI_TARGET_PATH}/${APP_NAME}
-WASABI_CLASSPATH=${WASABI_HOME}/lib/${APP_NAME}-all.jar
 
-[ -z "$JAVA_OPTIONS" ] && export JAVA_OPTIONS="\
+[ -z "$WASABI_API_JAVA_OPTIONS" ] && export WASABI_API_JAVA_OPTIONS="\
   -Xms256m\
   -Xmx256m\
   -server\
@@ -34,4 +33,4 @@ WASABI_CLASSPATH=${WASABI_HOME}/lib/${APP_NAME}-all.jar
   -Dpassword=${CASSANDRA_PASSWORD}\
   -DnodeHosts=${CASSANDRA_HOST}"
 
-java ${JAVA_OPTIONS} -cp ${WASABI_CLASSPATH} com.intuit.wasabi.Main
+java ${WASABI_API_JAVA_OPTIONS} -cp ${WASABI_HOME}/lib/${APP_NAME}-all.jar com.intuit.wasabi.Main

@@ -20,8 +20,8 @@ services:
       context: .
       dockerfile: wasabi-api.Dockerfile
       args:
+        - WASABI_API_JAVA_OPTIONS
         - WASABI_BASE_IMAGE=wasabi-base-${WASABI_PROFILE}:${WASABI_VERSION}
-        - WASABI_JAVA_OPTIONS
         - WASABI_PORT_API
         - WASABI_PORT_JMX
         - WASABI_PORT_DEBUG
