@@ -14,11 +14,11 @@ RUN mkdir -p /wasabi/migrations \
 ADD https://github.com/hhandoko/cassandra-migration/releases/download/cassandra-migration-0.15/cassandra-migration-0.15-jar-with-dependencies.jar .
 ADD cassandra-setup.sh .
 
-ARG CASSANDRA_HOST
-ARG CASSANDRA_KEYSPACE_PREFIX
+ARG CASSANDRA_HOST=localhost
+ARG CASSANDRA_KEYSPACE_PREFIX=wasabi
 ARG CASSANDRA_PASSWORD
-ARG CASSANDRA_PORT
-ARG CASSANDRA_REPLICATION
+ARG CASSANDRA_PORT=9042
+ARG CASSANDRA_REPLICATION=1
 ARG CASSANDRA_USER
 
 ENV CASSANDRA_MIGRATION_DIR=/wasabi/migrations \
