@@ -23,7 +23,7 @@ Steps to build wasabi
     git clone git@github.com:djordon/wasabi-contained.git
     cd wasabi-contained
     ```
-2. Build the images. This takes some time.
+2. Build the images. This takes 5-10 minutes.
 
     ```bash
     docker-compose build

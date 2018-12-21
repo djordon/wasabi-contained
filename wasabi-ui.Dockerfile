@@ -1,40 +1,32 @@
 ARG WASABI_BASE_IMAGE
-FROM ${WASABI_BASE_IMAGE}
+FROM ${WASABI_BASE_IMAGE} AS base
 
-ENV NVM_DIR=/usr/local/nvm \
-    NVM_VERSION=v0.33.11 \
-    NODE_VERSION=8.9.0
+FROM node:8.14.0-stretch-slim
 
-WORKDIR $NVM_DIR
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        bzip2 \
+        git \
+        ruby \
+        ruby-compass \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/${NVM_VERSION}/install.sh | bash \
-    && . $NVM_DIR/nvm.sh \
-    && nvm install ${NODE_VERSION} \
-    && nvm alias default ${NODE_VERSION} \
-    && nvm use default
+ARG WASABI_API
+ARG WASABI_PROFILE
+ARG WASABI_PORT_UI=9090
 
-ENV NODE_PATH=${NVM_DIR}/versions/node/v${NODE_VERSION}/lib/node_modules \
-    PATH=${NVM_DIR}/versions/node/v${NODE_VERSION}/bin:$PATH
+ENV API_HOST=${WASABI_API} \
+    PORT=${WASABI_PORT_UI} \
+    UI_HOST=0.0.0.0 \
+    WASABI_PROFILE=${WASABI_PROFILE}
 
 RUN npm install -g bower grunt-cli yo
+
+COPY --from=base /app/modules/ui/ /app/modules/ui/
 
 WORKDIR /app/modules/ui
 
 RUN npm install && bower --allow-root install && grunt build
-
-WORKDIR /app
-
-COPY build-ui.sh .
-RUN ./build-ui.sh -b false -t false -p development
-
-WORKDIR /app/modules/ui
-
-ARG WASABI_PORT_UI=9090
-ARG WASABI_API
-
-ENV API_HOST=${WASABI_API} \
-    PORT=${WASABI_PORT_UI} \
-    UI_HOST=0.0.0.0
 
 EXPOSE ${WASABI_PORT_UI}
 
