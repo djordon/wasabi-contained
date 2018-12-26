@@ -28,13 +28,14 @@ Steps to build wasabi
     ```bash
     docker-compose build
     ```
-3. Run migrations on cassandra.
+3. Run migrations on cassandra. Also modify mysql's configuration.
 
     ```bash
     docker-compose up cassandra mysql
     ...
     # In another terminal
     docker-compose run --rm cassandra-setup
+    docker-compose run --rm mysql-setup
     ```
 4. Boot up the API and UI.
 
