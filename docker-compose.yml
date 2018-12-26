@@ -9,6 +9,7 @@ services:
       context: .
       dockerfile: wasabi-base.Dockerfile
       args:
+        - MYSQL_CONNECTOR_VERSION
         - WASABI_MAVEN_SETTINGS
         - WASABI_VERSION
         - WASABI_PROFILE
