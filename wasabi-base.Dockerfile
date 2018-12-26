@@ -20,6 +20,7 @@ ENV MYSQL_CONNECTOR_VERSION=${MYSQL_CONNECTOR_VERSION} \
 RUN git clone --depth 1 https://github.com/intuit/wasabi.git . --branch ${WASABI_VERSION}
 
 RUN sed -i.bu 's/5.1.38/${MYSQL_CONNECTOR_VERSION}/g' modules/database/pom.xml
+RUN sed -i.bu 's/useSSL=false/useSSL=false\&amp;allowPublicKeyRetrieval=true/g' pom.xml
 
 RUN mvn ${WASABI_MAVEN_SETTINGS} \
     -P${WASABI_PROFILE} clean \
