@@ -65,8 +65,8 @@ services:
   mysql:
     image: mysql:8.0.13
     container_name: wasabi_mysql
-    volumes:
-      - mysql-data:/var/lib/mysql
+    # volumes:
+    #   - mysql-data:/var/lib/mysql
     ports:
       - "${MYSQL_PORT}:${MYSQL_PORT}"
     environment:
@@ -79,8 +79,8 @@ services:
   cassandra:
     image: cassandra:3.11.3
     container_name: wasabi_cassandra
-    volumes:
-      - cassandra-data:/var/lib/cassandra
+    # volumes:
+    #   - cassandra-data:/var/lib/cassandra
     ports:
       - "${CASSANDRA_PORT}:${CASSANDRA_PORT}"
     healthcheck:
@@ -105,6 +105,20 @@ services:
     depends_on:
       - cassandra
 
-volumes:
-  mysql-data:
-  cassandra-data:
+  mysql-setup:
+    image: mysql-setup-${WASABI_VERSION}:8.0.13
+    build: 
+      context: .
+      dockerfile: wasabi-mysql.Dockerfile
+      args:
+        - MYSQL_DATABASE
+        - MYSQL_HOSTNAME
+        - MYSQL_PORT
+        - MYSQL_ROOT_PASSWORD
+    container_name: wasabi_mysql_setup
+    depends_on:
+      - mysql
+
+# volumes:
+#   mysql-data:
+#   cassandra-data:
